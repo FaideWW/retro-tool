@@ -1,11 +1,13 @@
-import { type NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "../utils/api";
+import { getServerAuthSession } from "../server/auth";
+import { useRouter } from "next/router";
 
-const Home: NextPage = () => {
+const Index: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (
@@ -56,14 +58,14 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Index;
 
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
 
   return (

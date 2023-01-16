@@ -32,6 +32,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -40,6 +41,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
@@ -50,6 +53,13 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  displayName         String?         @default("")
+  ownedRetros         Retrospective[] @relation("OwnedRetros")
+  hostedRetros        Retrospective[] @relation("HostedRetros")
+  participantRetros   Retrospective[] @relation("ParticipantRetros")
+  submittedRetroItems RetroItem[]
+  authoredActionItems ItemComment[]
 }
 
 model VerificationToken {
@@ -58,4 +68,90 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Retros
+
+enum Status {
+  UNSTARTED
+  REFLECTION
+  GROUPING
+  VOTING
+  DISCUSSION
+  ENDED
+}
+
+enum Column {
+  POSITIVE
+  NEGATIVE
+}
+
+model Retrospective {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  slug      String   @unique
+  ownerId   String?
+  hostId    String?
+
+  title     String
+  status    Status    @default(UNSTARTED)
+  startedAt DateTime? @default(now()) @db.Timestamp(0)
+  endedAt   DateTime? @default(now()) @db.Timestamp(0)
+
+  hostCanParticipate  Boolean @default(true)
+  votesPerParticipant Int     @default(5)
+
+  owner        User?       @relation("OwnedRetros", fields: [ownerId], references: [id], onDelete: SetNull)
+  host         User?       @relation("HostedRetros", fields: [hostId], references: [id], onDelete: SetNull)
+  participants User[]      @relation("ParticipantRetros")
+  items        RetroItem[]
+
+  @@index([slug])
+  @@index([ownerId])
+  @@index([hostId])
+}
+
+model RetroItem {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  submitterId String?
+  retroId     String
+  parentId    String?
+  column      Column
+
+  text      String @db.Text
+  voteCount Int    @default(0)
+
+  submitter User?         @relation(fields: [submitterId], references: [id], onDelete: SetNull)
+  retro     Retrospective @relation(fields: [retroId], references: [id], onDelete: Cascade)
+  comments  ItemComment[]
+  parent    RetroItem?    @relation("GroupedRetroItems", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  RetroItem[]   @relation("GroupedRetroItems")
+
+  @@index([submitterId])
+  @@index([retroId])
+  @@index([retroId, submitterId])
+  @@index([parentId])
+  @@index([retroId, column])
+}
+
+enum Type {
+  DISCUSSION
+  ACTION_ITEM
+}
+
+model ItemComment {
+  id        String   @id @default(cuid())
+  type      Type     @default(DISCUSSION)
+  createdAt DateTime @default(now())
+  parentId  String
+  authorId  String?
+
+  text String @db.Text
+
+  parentItem RetroItem @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  author     User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([parentId])
+  @@index([authorId])
 }

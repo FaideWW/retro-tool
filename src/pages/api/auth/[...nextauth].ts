@@ -12,6 +12,7 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        session.user.displayName = user.displayName;
       }
       return session;
     },
@@ -33,6 +34,9 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  pages: {
+    newUser: "/auth/new-user",
+  },
 };
 
 export default NextAuth(authOptions);
