@@ -2,6 +2,7 @@ import type { RouterOutputs } from "../../../../utils/api";
 import HostDiscussionRetroView from "./HostDiscussionRetroView";
 import HostGroupingRetroView from "./HostGroupingRetroView";
 import HostReflectionRetroView from "./HostReflectionRetroView";
+import HostSummaryRetroView from "./HostSummaryRetroView";
 import HostUnstartedRetroView from "./HostUnstartedRetroView";
 import HostVotingRetroView from "./HostVotingRetroView";
 
@@ -36,7 +37,7 @@ export default function HostRetroView({
     }
     case "ENDED": {
       // TODO
-      return null;
+      return <HostSummaryRetroView retro={retro} onRefetch={onRefetch} />;
     }
   }
 }

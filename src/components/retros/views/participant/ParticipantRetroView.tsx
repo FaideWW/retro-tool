@@ -2,6 +2,7 @@ import type { RouterOutputs } from "../../../../utils/api";
 import ParticipantDiscussionRetroView from "./ParticipantDiscussionRetroView";
 import ParticipantGroupingRetroView from "./ParticipantGroupingRetroView";
 import ParticipantReflectionRetroView from "./ParticipantReflectionRetroView";
+import ParticipantSummaryRetroView from "./ParticipantSummaryRetroView";
 import ParticipantUnstartedRetroView from "./ParticipantUnstartedRetroView";
 import ParticipantVotingRetroView from "./ParticipantVotingRetroView";
 
@@ -21,30 +22,27 @@ export default function ParticipantRetroView({
       );
     }
     case "REFLECTION": {
-      // TODO
       return (
         <ParticipantReflectionRetroView retro={retro} onRefetch={onRefetch} />
       );
     }
     case "GROUPING": {
-      // TODO
       return (
         <ParticipantGroupingRetroView retro={retro} onRefetch={onRefetch} />
       );
     }
     case "VOTING": {
-      // TODO
       return <ParticipantVotingRetroView retro={retro} onRefetch={onRefetch} />;
     }
     case "DISCUSSION": {
-      // TODO
       return (
         <ParticipantDiscussionRetroView retro={retro} onRefetch={onRefetch} />
       );
     }
     case "ENDED": {
-      // TODO
-      return null;
+      return (
+        <ParticipantSummaryRetroView retro={retro} onRefetch={onRefetch} />
+      );
     }
   }
 }

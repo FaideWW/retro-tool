@@ -1,7 +1,7 @@
 import type { Retrospective } from "@prisma/client";
 import DiscussionRetroView from "../shared/DiscussionRetroView";
 
-export default function ParticipantDiscussionRetroView({
+export default function ParticipantSummaryRetroView({
   retro,
   onRefetch,
 }: {
@@ -10,7 +10,7 @@ export default function ParticipantDiscussionRetroView({
 }) {
   return (
     <>
-      <DiscussionRetroView retro={retro} onRefetch={onRefetch} />
+      <DiscussionRetroView retro={retro} onRefetch={onRefetch} isSummary />
     </>
   );
 }
